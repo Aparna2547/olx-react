@@ -1,34 +1,44 @@
-import React, { useContext } from 'react';
+import React, { useContext } from "react";
 
-import './Header.css';
-import OlxLogo from '../../assets/OlxLogo';
-import Search from '../../assets/Search';
-import Arrow from '../../assets/Arrow';
-import SellButton from '../../assets/SellButton';
-import SellButtonPlus from '../../assets/SellButtonPlus';
-import { AuthContext, FirebaseContext } from '../../store/Context';
-import {  useNavigate } from 'react-router-dom';
-import { getAuth,signOut } from "firebase/auth";
+import "./Header.css";
+import OlxLogo from "../../assets/OlxLogo";
+import Search from "../../assets/Search";
+import Arrow from "../../assets/Arrow";
+import SellButton from "../../assets/SellButton";
+import SellButtonPlus from "../../assets/SellButtonPlus";
+import { AuthContext, FirebaseContext } from "../../store/Context";
+import { Link, useNavigate } from "react-router-dom";
+import { useHistory } from 'react-router-dom';
+
+
+// import { useHistory } from "react-router-dom";
+import { getAuth, signOut } from "firebase/auth";
+import Login from "../Login/Login";
 function Header() {
-  const {user}  = useContext(AuthContext)
-  const {firebase} = useContext(FirebaseContext)
-  const navigate  = useNavigate();
+  const { user,setUser } = useContext(AuthContext);
+  const { firebase } = useContext(FirebaseContext);
+  const navigate = useNavigate();
+  // const history = useHistory()
 
-  const handleLogout = async () =>{
-    const auth = getAuth();
+  const handleLogout = (async()=>{
+    const auth = getAuth()
     try {
-      await signOut(auth);
-      navigate('/login')
+        await signOut(auth);
+        setUser(null)
+        navigate('/login')
     } catch (error) {
-      console.log(error.message);
+        console.error('Error logging out:', error);
     }
-     
-  }
+})
+
+
+
   return (
     <div className="headerParentDiv">
       <div className="headerChildDiv">
         <div className="brandName">
-          <OlxLogo></OlxLogo>
+          <Link to='/'> <OlxLogo></OlxLogo></Link>
+         
         </div>
         <div className="placeSearch">
           <Search></Search>
@@ -51,19 +61,40 @@ function Header() {
           <Arrow></Arrow>
         </div>
         <div className="loginPage">
-          <span className='text-dark'>{user ? user.displayName: 'Login'}</span>
+          {user ? (
+           <span style={{cursor:'pointer'}}>{user.displayName}</span> 
+          ) : (
+            <Link to="/login">
+              <span className="text-dark">Login</span>
+            </Link>
+          )}
 
           <hr />
         </div>
-        {user && <span  onClick={handleLogout}>Logout </span>}
+        {user && <span style={{cursor:'pointer'}} onClick={handleLogout}>Logout </span>}
 
+        {user && (
+              <>
         <div className="sellMenu">
+          <SellButton />
+          <div className="sellMenuContent">
+            
+               <Link to='/sell' className="text-decoration-none text-dark mx-0">
+                <SellButtonPlus  />
+                <span>SELL:</span>
+                </Link>
+          </div>
+         
+        </div>
+        </>
+          )}
+        {/* <div className="sellMenu">
           <SellButton></SellButton>
           <div className="sellMenuContent">
             <SellButtonPlus></SellButtonPlus>
             <span>SELL</span>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );

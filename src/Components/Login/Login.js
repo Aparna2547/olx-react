@@ -3,8 +3,10 @@ import {FirebaseContext} from '../../store/Context'
 import Logo from '../../olx-logo.png';
 import './Login.css';
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+// import Login from '.'
 
+{/* <Login /> */}
 function Login() {
   const [email,setEmail] = useState('')
   const [password,setPassword] = useState('')
@@ -22,7 +24,7 @@ function Login() {
     await signInWithEmailAndPassword(auth,email,password)
     navigate('/')
    } catch (error) {
-    alert(error.message)
+    // alert(error.message)
       setError(error.message)
    }
   }
@@ -55,10 +57,13 @@ function Login() {
             defaultValue="Doe"
           />
           <br />
+          {error && <p className="error-message text-danger text-center fw-bold">Invalid Email or Password</p>}
           <br />
           <button>Login</button>
         </form>
+        <Link to='/signup'>
         <a>Signup</a>
+        </Link>
       </div>
     </div>
   );

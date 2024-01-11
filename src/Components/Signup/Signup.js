@@ -5,7 +5,7 @@ import Logo from '../../olx-logo.png';
 import './Signup.css';
 import { FirebaseContext } from '../../store/Context';
 import { getAuth, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 
 export default function Signup() {
@@ -13,12 +13,34 @@ export default function Signup() {
   const [email,setEmail] = useState('');
   const [mobile,setMobile] = useState('')
   const [password,setPassword] = useState('')
+  const [error,setError] = useState('')
 
 const navigate = useNavigate()
   const {firebase} = useContext(FirebaseContext)
+
+  
   const handleSubmit =async (e) =>{
     e.preventDefault()
     const auth = getAuth();
+
+  try {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if(username.length <1){
+      console.log('no length')
+      setError("Enter a valid username")
+    }
+    
+    else if(!emailRegex.test(email)){
+      setError("Enter valid email")
+    }
+    else if(mobile.length!==10){
+      setError("enter valid mobile")
+    }
+    else if(password.length<6){
+      setError("enter password")
+    }
+    else{
+      
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     updateProfile(auth.currentUser, {
         displayName: username
@@ -32,6 +54,10 @@ const navigate = useNavigate()
         phone: mobile,
     });
     navigate('/login')
+    }
+  } catch (error) {
+    
+  }
   }
 
   return (
@@ -87,6 +113,7 @@ const navigate = useNavigate()
             defaultValue="Doe"
           />
           <br />
+          {error && <p>{error}</p>}
           <br />
           <button>Signup</button>
         </form>
